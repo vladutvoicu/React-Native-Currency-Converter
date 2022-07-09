@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "CurrencyConverter",
+    "name": "Currency Converter",
     "slug": "CurrencyConverter",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -24,7 +24,8 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
-      }
+      },
+      "softwareKeyboardLayoutMode": "pan"
     },
     "web": {
       "favicon": "./assets/favicon.png"
