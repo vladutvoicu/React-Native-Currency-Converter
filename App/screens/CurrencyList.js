@@ -38,6 +38,7 @@ export default CurrencyList = ({ navigation, route }) => {
         </TouchableOpacity>
       </View>
       <FlatList
+        initialNumToRender={15}
         data={currencies}
         renderItem={({ item }) => (
           <CurrencyItem

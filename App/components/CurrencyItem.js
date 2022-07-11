@@ -11,22 +11,19 @@ import { Entypo } from "@expo/vector-icons";
 
 import colors from "../constants/colors";
 
+import flags from "../constants/flags";
+
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 export default CurrencyItem = ({ currency, checked, disabled, onPress }) => {
-  const flags = {
-    EUR: require("../assets/flags/eu.png"),
-    USD: require("../assets/flags/us.png"),
-    GBP: require("../assets/flags/gb.png"),
-  };
   return (
     <View>
       {disabled ? <View style={styles.disabledItem} /> : null}
       <TouchableOpacity
         style={styles.container}
         activeOpacity={0.5}
-        disabled={disabled ? true : false}
+        disabled={disabled || checked ? true : false}
         onPress={onPress}
       >
         <Text
@@ -65,6 +62,7 @@ const styles = StyleSheet.create({
     left: "25%",
     height: 0.04 * windowHeight,
     width: 0.14 * windowWidth,
+    borderRadius: 10,
   },
   check: {
     position: "absolute",

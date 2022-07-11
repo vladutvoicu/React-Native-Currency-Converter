@@ -24,6 +24,7 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 import Input from "../components/Input";
+import currencies_ from "../constants/currencies";
 
 export default Home = ({ navigation, route }) => {
   const [keyboardShown, setKeyboardShown] = useState();
@@ -34,7 +35,7 @@ export default Home = ({ navigation, route }) => {
   const [toCurrencyValue, setToCurrencyValue] = useState("");
   const [exchangeRate, setExchangeRate] = useState("");
   const [date, setDate] = useState("");
-  const [currencies, setCurrencies] = useState(["EUR", "USD", "GBP"]);
+  const [currencies, setCurrencies] = useState(currencies_);
 
   useEffect(() => {
     route.params?.fromCurrency != undefined
