@@ -32,7 +32,7 @@ export default CurrencyList = ({ navigation, route }) => {
         <TouchableOpacity
           style={styles.chevronDown}
           activeOpacity={0.5}
-          onPress={() => navigation.navigate("Home")}
+          onPress={() => navigation.navigate("Home", { loading: false })}
         >
           <Entypo name="chevron-down" color={colors.white} size={50} />
         </TouchableOpacity>
@@ -49,8 +49,8 @@ export default CurrencyList = ({ navigation, route }) => {
               navigation.navigate(
                 "Home",
                 route.params?.fromCurrency
-                  ? { fromCurrency: item }
-                  : { toCurrency: item }
+                  ? { fromCurrency: item, loading: true }
+                  : { toCurrency: item, loading: true }
               )
             }
           />

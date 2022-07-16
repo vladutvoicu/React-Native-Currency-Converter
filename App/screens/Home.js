@@ -9,6 +9,7 @@ import {
   Keyboard,
   TouchableOpacity,
   TouchableWithoutFeedback,
+  ActivityIndicator,
 } from "react-native";
 import { setStatusBarStyle } from "expo-status-bar";
 import {
@@ -29,6 +30,7 @@ import currencies_ from "../constants/currencies";
 export default Home = ({ navigation, route }) => {
   const [keyboardShown, setKeyboardShown] = useState();
   const [keyboardHeight, setKeyboardHeight] = useState();
+  const [loading, setLoading] = useState(true);
   const [fromCurrency, setFromCurrency] = useState("EUR");
   const [toCurrency, setToCurrency] = useState("USD");
   const [fromCurrencyValue, setFromCurrencyValue] = useState("");
@@ -38,12 +40,68 @@ export default Home = ({ navigation, route }) => {
   const [currencies, setCurrencies] = useState(currencies_);
 
   useEffect(() => {
-    route.params?.fromCurrency != undefined
-      ? setFromCurrency(route.params?.fromCurrency)
+    route.params?.loading === true
+      ? (setLoading(true), navigation.setParams({ loading: null }))
       : null;
-    route.params?.toCurrency != undefined
-      ? setToCurrency(route.params?.toCurrency)
-      : null;
+  }, [route.params?.loading]);
+
+  useEffect(() => {
+    var url;
+    if (
+      route.params?.fromCurrency == undefined &&
+      route.params?.toCurrency == undefined
+    ) {
+      url = "https://currencyexchangerateapi.herokuapp.com/EUR/USD";
+
+      fetch(url)
+        .then((response) => response.json())
+        .then((data) => {
+          setExchangeRate(data["exchangeRate"]);
+          setDate(data["date"]);
+        })
+        .then(() => setLoading(false));
+    } else {
+      route.params?.fromCurrency != undefined
+        ? (() => {
+            setFromCurrency(route.params?.fromCurrency);
+
+            url = `https://currencyexchangerateapi.herokuapp.com/${route.params?.fromCurrency}/${toCurrency}`;
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                setExchangeRate(data["exchangeRate"]);
+                setDate(data["date"]);
+
+                setToCurrencyValue(
+                  (fromCurrencyValue * data["exchangeRate"])
+                    .toFixed(2)
+                    .toString()
+                );
+              })
+              .then(() => setLoading(false));
+          })()
+        : null;
+      route.params?.toCurrency != undefined
+        ? (() => {
+            setToCurrency(route.params?.toCurrency);
+
+            url = `https://currencyexchangerateapi.herokuapp.com/${fromCurrency}/${route.params?.toCurrency}`;
+            fetch(url)
+              .then((response) => response.json())
+              .then((data) => {
+                setExchangeRate(data["exchangeRate"]);
+                setDate(data["date"]);
+
+                setToCurrencyValue(
+                  (fromCurrencyValue * data["exchangeRate"])
+                    .toFixed(2)
+                    .toString()
+                );
+              })
+              .then(() => setLoading(false));
+          })()
+        : null;
+    }
   }, [route.params?.fromCurrency, route.params?.toCurrency]);
 
   useEffect(() => {
@@ -65,10 +123,50 @@ export default Home = ({ navigation, route }) => {
   }, [keyboardShown, keyboardHeight]);
 
   const swapCurrencies = () => {
+    setLoading(true);
+
     var _fromCurrency = toCurrency;
     var _toCurrency = fromCurrency;
-    setFromCurrency(_fromCurrency);
-    setToCurrency(_toCurrency);
+
+    var url = `https://currencyexchangerateapi.herokuapp.com/${_fromCurrency}/${_toCurrency}`;
+    fetch(url)
+      .then((response) => response.json())
+      .then((data) => {
+        setExchangeRate(data["exchangeRate"]);
+        setDate(data["date"]);
+
+        setToCurrencyValue(
+          (fromCurrencyValue * data["exchangeRate"]).toFixed(2).toString()
+        );
+      })
+      .then(() => {
+        setFromCurrency(_fromCurrency);
+        setToCurrency(_toCurrency);
+      })
+      .then(() => setLoading(false));
+  };
+
+  const formatExchangeRate = (exchangeRate) => {
+    if (typeof exchangeRate != "string" && exchangeRate != undefined) {
+      exchangeRate = exchangeRate.toString();
+
+      var decimals = [...exchangeRate.split(".")[1]];
+
+      var zeroCount = 0;
+      for (var i in decimals) {
+        if (decimals[i] === "0") {
+          zeroCount += 1;
+        }
+      }
+
+      var formattedExchangeRate =
+        zeroCount != 0
+          ? zeroCount === 1
+            ? Number(exchangeRate).toFixed(zeroCount + 2)
+            : Number(exchangeRate).toFixed(zeroCount + 1)
+          : Number(exchangeRate).toFixed(2);
+      return formattedExchangeRate;
+    }
   };
 
   //
@@ -85,11 +183,12 @@ export default Home = ({ navigation, route }) => {
         />
         <View style={styles.header}>
           <Image source={require("../assets/logo.png")} style={styles.logo} />
-          <LinearGradient
-            colors={[`${colors.darkPink}70`, `${colors.blue}70`]}
-            start={[0, 0]}
-            end={[1, 0]}
-            style={{ padding: "2%", borderRadius: 60 }}
+          <View
+            style={{
+              padding: "2%",
+              borderRadius: 60,
+              backgroundColor: `${colors.darkBlue}99`,
+            }}
           >
             <Text
               style={{
@@ -100,7 +199,7 @@ export default Home = ({ navigation, route }) => {
             >
               Currency Converter
             </Text>
-          </LinearGradient>
+          </View>
         </View>
         <LinearGradient
           colors={[`${colors.darkBlue}99`, colors.black]}
@@ -113,7 +212,7 @@ export default Home = ({ navigation, route }) => {
                 : keyboardHeight
                 ? [
                     styles.inputContainer,
-                    { marginTop: (35 / 100) * keyboardHeight },
+                    { marginTop: (8 / 100) * keyboardHeight },
                   ]
                 : styles.inputContainer
             }
@@ -143,6 +242,9 @@ export default Home = ({ navigation, route }) => {
               }
               onChangeText={(input) => {
                 setFromCurrencyValue(input);
+                setToCurrencyValue(
+                  (input * exchangeRate).toFixed(2).toString()
+                );
               }}
             />
             <Input
@@ -166,17 +268,24 @@ export default Home = ({ navigation, route }) => {
               justifyContent: "center",
             }}
           ></View>
-          <View style={styles.text}>
-            <Text
-              numberOfLines={1}
-              allowFontScaling={true}
-              style={{ color: colors.white, fontSize: 0.04 * windowWidth }}
-            >
-              1 {fromCurrency} = {exchangeRate} {toCurrency} as of {date}{" "}
+          <View style={styles.textContainer}>
+            <Text numberOfLines={1} allowFontScaling={true} style={styles.text}>
+              1 {fromCurrency} = {formatExchangeRate(exchangeRate)} {toCurrency}{" "}
+            </Text>
+            <Text numberOfLines={1} allowFontScaling={true} style={styles.text}>
+              as of
+            </Text>
+            <Text numberOfLines={1} allowFontScaling={true} style={styles.text}>
+              {date}
             </Text>
           </View>
         </LinearGradient>
         <View style={styles.darkView} />
+        {loading ? (
+          <View style={styles.loading}>
+            <ActivityIndicator size={0.2 * windowWidth} color={colors.white} />
+          </View>
+        ) : null}
       </View>
     </TouchableWithoutFeedback>
   );
@@ -215,16 +324,29 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  text: {
+  textContainer: {
     marginTop: "10%",
     width: "100%",
     alignItems: "center",
     justifyContent: "center",
+  },
+  text: {
+    color: colors.white,
+    fontSize: 0.04 * windowWidth,
+    padding: "1%",
   },
   swap: {
     position: "absolute",
     top: "39%",
     left: "8%",
     transform: [{ rotate: "90deg" }],
+  },
+  loading: {
+    position: "absolute",
+    alignItems: "center",
+    justifyContent: "center",
+    height: "100%",
+    width: "100%",
+    backgroundColor: `${colors.black}99`,
   },
 });
