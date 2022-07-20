@@ -19,7 +19,7 @@ A currency converter app made in React Native
 
 ## :hammer_and_wrench: Built using
 
-- [Javascript](https://www.javascript.com) - Language
+- [JavaScript](https://www.javascript.com) - Language
 - [React Native](https://reactnative.dev) - Mobile App Framework
 - [Expo](https://expo.dev) - Framework extending React Native
 - [Currency Exchange Rate API](https://github.com/vladutvoicu/Currency-Exchange-Rate-API)
