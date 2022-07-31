@@ -25,19 +25,34 @@ const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
 import Input from "../components/Input";
-import currencies_ from "../constants/currencies";
 
 export default Home = ({ navigation, route }) => {
   const [keyboardShown, setKeyboardShown] = useState();
   const [keyboardHeight, setKeyboardHeight] = useState();
   const [loading, setLoading] = useState(true);
+  const [fromInputCurrenciesType, setFromInputCurrenciesType] =
+    useState("currencies");
+  const [toInputCurrenciesType, setToInputCurrenciesType] =
+    useState("currencies");
   const [fromCurrency, setFromCurrency] = useState("EUR");
   const [toCurrency, setToCurrency] = useState("USD");
   const [fromCurrencyValue, setFromCurrencyValue] = useState("");
   const [toCurrencyValue, setToCurrencyValue] = useState("");
-  const [exchangeRate, setExchangeRate] = useState("");
+  const [exchangeRate, setExchangeRate] = useState();
   const [date, setDate] = useState("");
-  const [currencies, setCurrencies] = useState(currencies_);
+
+  useEffect(() => {
+    route.params?.fromInputCurrenciesType != undefined
+      ? setFromInputCurrenciesType(route.params?.fromInputCurrenciesType)
+      : null;
+
+    route.params?.toInputCurrenciesType != undefined
+      ? setToInputCurrenciesType(route.params?.toInputCurrenciesType)
+      : null;
+  }, [
+    route.params?.fromInputCurrenciesType,
+    route.params?.toInputCurrenciesType,
+  ]);
 
   useEffect(() => {
     route.params?.loading === true
@@ -46,63 +61,65 @@ export default Home = ({ navigation, route }) => {
   }, [route.params?.loading]);
 
   useEffect(() => {
-    var url;
-    if (
-      route.params?.fromCurrency == undefined &&
-      route.params?.toCurrency == undefined
-    ) {
-      url = "https://currencyexchangerateapi.herokuapp.com/EUR/USD";
+    if (route.params?.loading == undefined || route.params?.loading == true) {
+      var url;
+      if (
+        route.params?.fromCurrency == undefined &&
+        route.params?.toCurrency == undefined
+      ) {
+        url = "https://currencyexchangerateapi.herokuapp.com/EUR/USD";
 
-      fetch(url)
-        .then((response) => response.json())
-        .then((data) => {
-          setExchangeRate(data["exchangeRate"]);
-          setDate(data["date"]);
-        })
-        .then(() => setLoading(false));
-    } else {
-      route.params?.fromCurrency != undefined
-        ? (() => {
-            setFromCurrency(route.params?.fromCurrency);
+        fetch(url)
+          .then((response) => response.json())
+          .then((data) => {
+            setExchangeRate(data["exchangeRate"]);
+            setDate(data["date"]);
+          })
+          .then(() => setLoading(false));
+      } else {
+        route.params?.fromCurrency != undefined
+          ? (() => {
+              setFromCurrency(route.params?.fromCurrency);
 
-            url = `https://currencyexchangerateapi.herokuapp.com/${route.params?.fromCurrency}/${toCurrency}`;
-            fetch(url)
-              .then((response) => response.json())
-              .then((data) => {
-                setExchangeRate(data["exchangeRate"]);
-                setDate(data["date"]);
+              url = `https://currencyexchangerateapi.herokuapp.com/${route.params?.fromCurrency}/${toCurrency}`;
+              fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                  setExchangeRate(data["exchangeRate"]);
+                  setDate(data["date"]);
 
-                setToCurrencyValue(
-                  (fromCurrencyValue * data["exchangeRate"])
-                    .toFixed(2)
-                    .toString()
-                );
-              })
-              .then(() => setLoading(false));
-          })()
-        : null;
-      route.params?.toCurrency != undefined
-        ? (() => {
-            setToCurrency(route.params?.toCurrency);
+                  setToCurrencyValue(
+                    (fromCurrencyValue * data["exchangeRate"]).toFixed(2)
+                  );
+                })
+                .then(() => setLoading(false));
+            })()
+          : null;
+        route.params?.toCurrency != undefined
+          ? (() => {
+              setToCurrency(route.params?.toCurrency);
 
-            url = `https://currencyexchangerateapi.herokuapp.com/${fromCurrency}/${route.params?.toCurrency}`;
-            fetch(url)
-              .then((response) => response.json())
-              .then((data) => {
-                setExchangeRate(data["exchangeRate"]);
-                setDate(data["date"]);
+              url = `https://currencyexchangerateapi.herokuapp.com/${fromCurrency}/${route.params?.toCurrency}`;
+              fetch(url)
+                .then((response) => response.json())
+                .then((data) => {
+                  setExchangeRate(data["exchangeRate"]);
+                  setDate(data["date"]);
 
-                setToCurrencyValue(
-                  (fromCurrencyValue * data["exchangeRate"])
-                    .toFixed(2)
-                    .toString()
-                );
-              })
-              .then(() => setLoading(false));
-          })()
-        : null;
+                  setToCurrencyValue(
+                    (fromCurrencyValue * data["exchangeRate"]).toFixed(2)
+                  );
+                })
+                .then(() => setLoading(false));
+            })()
+          : null;
+      }
     }
-  }, [route.params?.fromCurrency, route.params?.toCurrency]);
+  }, [
+    route.params?.fromCurrency,
+    route.params?.toCurrency,
+    route.params?.loading,
+  ]);
 
   useEffect(() => {
     const showSubscription = Keyboard.addListener(
@@ -125,10 +142,16 @@ export default Home = ({ navigation, route }) => {
   const swapCurrencies = () => {
     setLoading(true);
 
-    var _fromCurrency = toCurrency;
-    var _toCurrency = fromCurrency;
+    var fromCurrency_ = toCurrency;
+    var toCurrency_ = fromCurrency;
 
-    var url = `https://currencyexchangerateapi.herokuapp.com/${_fromCurrency}/${_toCurrency}`;
+    var fromInputCurrenciesType_ = toInputCurrenciesType;
+    var toInputCurrenciesType_ = fromInputCurrenciesType;
+
+    setFromInputCurrenciesType(fromInputCurrenciesType_);
+    setToInputCurrenciesType(toInputCurrenciesType_);
+
+    var url = `https://currencyexchangerateapi.herokuapp.com/${fromCurrency_}/${toCurrency_}`;
     fetch(url)
       .then((response) => response.json())
       .then((data) => {
@@ -136,21 +159,26 @@ export default Home = ({ navigation, route }) => {
         setDate(data["date"]);
 
         setToCurrencyValue(
-          (fromCurrencyValue * data["exchangeRate"]).toFixed(2).toString()
+          formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
         );
       })
       .then(() => {
-        setFromCurrency(_fromCurrency);
-        setToCurrency(_toCurrency);
+        setFromCurrency(fromCurrency_);
+        setToCurrency(toCurrency_);
       })
       .then(() => setLoading(false));
   };
 
   const formatExchangeRate = (exchangeRate) => {
-    if (typeof exchangeRate != "string" && exchangeRate != undefined) {
+    if (
+      (typeof exchangeRate == "number" || typeof exchangeRate == "string") &&
+      exchangeRate != undefined &&
+      exchangeRate != "0"
+    ) {
       exchangeRate = exchangeRate.toString();
 
-      var decimals = [...exchangeRate.split(".")[1]];
+      var decimals = exchangeRate.split("");
+      decimals = decimals.slice(decimals.indexOf(".") + 1);
 
       var zeroCount = 0;
       for (var i in decimals) {
@@ -159,13 +187,21 @@ export default Home = ({ navigation, route }) => {
         }
       }
 
-      var formattedExchangeRate =
+      var formattedExchangeRate;
+      if (exchangeRate.includes(".") == true) {
         zeroCount != 0
           ? zeroCount === 1
-            ? Number(exchangeRate).toFixed(zeroCount + 2)
-            : Number(exchangeRate).toFixed(zeroCount + 1)
-          : Number(exchangeRate).toFixed(2);
-      return formattedExchangeRate;
+            ? (formattedExchangeRate = Number(exchangeRate).toFixed(
+                zeroCount + 2
+              ))
+            : (formattedExchangeRate = Number(exchangeRate).toFixed(
+                zeroCount + 1
+              ))
+          : (formattedExchangeRate = Number(exchangeRate).toFixed(2));
+        return formattedExchangeRate;
+      } else {
+        return exchangeRate;
+      }
     }
   };
 
@@ -234,7 +270,7 @@ export default Home = ({ navigation, route }) => {
               editable={true}
               onPress={() =>
                 navigation.navigate("CurrencyList", {
-                  currencies: currencies,
+                  currenciesType: fromInputCurrenciesType,
                   currentCurrency: fromCurrency,
                   oppositeCurrency: toCurrency,
                   fromCurrency: true,
@@ -242,9 +278,7 @@ export default Home = ({ navigation, route }) => {
               }
               onChangeText={(input) => {
                 setFromCurrencyValue(input);
-                setToCurrencyValue(
-                  (input * exchangeRate).toFixed(2).toString()
-                );
+                setToCurrencyValue(formatExchangeRate(input * exchangeRate));
               }}
             />
             <Input
@@ -253,7 +287,7 @@ export default Home = ({ navigation, route }) => {
               editable={false}
               onPress={() =>
                 navigation.navigate("CurrencyList", {
-                  currencies: currencies,
+                  currenciesType: toInputCurrenciesType,
                   currentCurrency: toCurrency,
                   oppositeCurrency: fromCurrency,
                 })

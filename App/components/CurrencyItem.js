@@ -12,11 +12,18 @@ import { Entypo } from "@expo/vector-icons";
 import colors from "../constants/colors";
 
 import flags from "../constants/flags";
+import crypto_icons from "../constants/crypto_icons";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
 
-export default CurrencyItem = ({ currency, checked, disabled, onPress }) => {
+export default CurrencyItem = ({
+  currency,
+  currenciesType,
+  checked,
+  disabled,
+  onPress,
+}) => {
   return (
     <View>
       {disabled ? <View style={styles.disabledItem} /> : null}
@@ -35,7 +42,16 @@ export default CurrencyItem = ({ currency, checked, disabled, onPress }) => {
         >
           {currency}
         </Text>
-        <Image source={flags[currency]} style={styles.flag} />
+        <Image
+          source={
+            currenciesType == "currencies"
+              ? flags[currency]
+              : crypto_icons[currency]
+          }
+          style={
+            currenciesType == "currencies" ? styles.flag : styles.crypto_icon
+          }
+        />
         {checked ? (
           <View style={styles.check}>
             <Entypo name={"check"} color={colors.black} size={30} />
@@ -63,6 +79,12 @@ const styles = StyleSheet.create({
     height: 0.04 * windowHeight,
     width: 0.14 * windowWidth,
     borderRadius: 10,
+  },
+  crypto_icon: {
+    position: "absolute",
+    left: "25%",
+    height: 0.05 * windowHeight,
+    width: 0.1 * windowWidth,
   },
   check: {
     position: "absolute",
