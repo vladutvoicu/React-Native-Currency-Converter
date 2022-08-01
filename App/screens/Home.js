@@ -61,6 +61,12 @@ export default Home = ({ navigation, route }) => {
   }, [route.params?.loading]);
 
   useEffect(() => {
+    var fromCurrencyValue_ = fromCurrencyValue.replace(",", "");
+
+    while (fromCurrencyValue_.includes(",")) {
+      fromCurrencyValue_ = fromCurrencyValue_.replace(",", "");
+    }
+
     if (route.params?.loading == undefined || route.params?.loading == true) {
       var url;
       if (
@@ -89,7 +95,9 @@ export default Home = ({ navigation, route }) => {
                   setDate(data["date"]);
 
                   setToCurrencyValue(
-                    formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
+                    formatExchangeRate(
+                      fromCurrencyValue_ * data["exchangeRate"]
+                    )
                   );
                 })
                 .then(() => setLoading(false));
@@ -107,7 +115,9 @@ export default Home = ({ navigation, route }) => {
                   setDate(data["date"]);
 
                   setToCurrencyValue(
-                    formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
+                    formatExchangeRate(
+                      fromCurrencyValue_ * data["exchangeRate"]
+                    )
                   );
                 })
                 .then(() => setLoading(false));
@@ -142,6 +152,12 @@ export default Home = ({ navigation, route }) => {
   const swapCurrencies = () => {
     setLoading(true);
 
+    var fromCurrencyValue_ = fromCurrencyValue.replace(",", "");
+
+    while (fromCurrencyValue_.includes(",")) {
+      fromCurrencyValue_ = fromCurrencyValue_.replace(",", "");
+    }
+
     var fromCurrency_ = toCurrency;
     var toCurrency_ = fromCurrency;
 
@@ -159,7 +175,7 @@ export default Home = ({ navigation, route }) => {
         setDate(data["date"]);
 
         setToCurrencyValue(
-          formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
+          formatExchangeRate(fromCurrencyValue_ * data["exchangeRate"])
         );
       })
       .then(() => {
@@ -167,6 +183,20 @@ export default Home = ({ navigation, route }) => {
         setToCurrency(toCurrency_);
       })
       .then(() => setLoading(false));
+  };
+
+  const addCommas = (number) => {
+    if (number.toString().indexOf(".") >= 1) {
+      const numberParts = number.toString().split(/\./);
+
+      return (
+        numberParts[0].toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") +
+        "." +
+        numberParts[1]
+      );
+    } else {
+      return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+    }
   };
 
   const formatExchangeRate = (exchangeRate) => {
@@ -198,9 +228,9 @@ export default Home = ({ navigation, route }) => {
                 zeroCount + 1
               ))
           : (formattedExchangeRate = Number(exchangeRate).toFixed(2));
-        return formattedExchangeRate;
+        return addCommas(formattedExchangeRate);
       } else {
-        return exchangeRate;
+        return addCommas(exchangeRate);
       }
     }
   };
@@ -277,8 +307,12 @@ export default Home = ({ navigation, route }) => {
                 })
               }
               onChangeText={(input) => {
-                setFromCurrencyValue(input);
+                while (input.includes(",")) {
+                  input = input.replace(",", "");
+                }
                 setToCurrencyValue(formatExchangeRate(input * exchangeRate));
+                input = addCommas(input);
+                setFromCurrencyValue(input);
               }}
             />
             <Input
