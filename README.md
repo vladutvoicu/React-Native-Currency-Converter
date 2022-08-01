@@ -73,7 +73,10 @@ expo start
 <img src="https://qr.expo.dev/expo-go?owner=vladutvoicu&slug=CurrencyConverter&releaseChannel=default&host=exp.host" width="250" height="250" />
 
 or use this URL in the Expo Go app:
-  - exp://exp.host/@vladutvoicu/CurrencyConverter?release-channel=default
+
+```bash
+exp://exp.host/@vladutvoicu/CurrencyConverter?release-channel=default
+```
 
 &nbsp;
 
