@@ -89,7 +89,7 @@ export default Home = ({ navigation, route }) => {
                   setDate(data["date"]);
 
                   setToCurrencyValue(
-                    (fromCurrencyValue * data["exchangeRate"]).toFixed(2)
+                    formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
                   );
                 })
                 .then(() => setLoading(false));
@@ -107,7 +107,7 @@ export default Home = ({ navigation, route }) => {
                   setDate(data["date"]);
 
                   setToCurrencyValue(
-                    (fromCurrencyValue * data["exchangeRate"]).toFixed(2)
+                    formatExchangeRate(fromCurrencyValue * data["exchangeRate"])
                   );
                 })
                 .then(() => setLoading(false));
