@@ -81,18 +81,24 @@ or use this URL in the Expo Go app:
 
 ### Choosing currency
 
-<img src="https://media0.giphy.com/media/OTcObXQFuNogr2eGLn/giphy.gif" height="350" />
+<img src="https://media4.giphy.com/media/aVRVnopFfAaizR245Y/giphy.gif?cid=790b76110517853322c6d14183d79d2023a38836e8458e21&rid=giphy.gif&ct=g" height="350" />
 
 &nbsp;
 
 ### Inserting value
-<img src="https://media1.giphy.com/media/wTg35TwdSbNIpylaCs/giphy.gif" height="350" />
+<img src="https://media1.giphy.com/media/GM0CVnDkbNQ4Vj4v71/giphy.gif?cid=790b7611337c94f8b52687d72cfb7164546df8dd72e55f0b&rid=giphy.gif&ct=g" height="350" />
+
+&nbsp;
+
+### Choosing crypto currency
+
+<img src="https://media0.giphy.com/media/KogC7IkB1eEhPbsKV6/giphy.gif?cid=790b7611b5406b936d4cdda92b10cf04eec1265d85326de6&rid=giphy.gif&ct=g" height="350" />
 
 &nbsp;
 
 ### Swapping currencies
 
-<img src="https://media3.giphy.com/media/s5vOkt5nZdlnFpIIdM/giphy.gif" height="350" />
+<img src="https://media1.giphy.com/media/KnhBvw8A2SlrXepQ1M/giphy.gif?cid=790b76115a16e97eee401feb4663e372c88f7749a0edbd03&rid=giphy.gif&ct=g" height="350" />
 
 &nbsp;
 
