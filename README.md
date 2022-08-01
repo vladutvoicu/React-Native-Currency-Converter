@@ -22,7 +22,7 @@ A currency converter app made in React Native
 - [JavaScript](https://www.javascript.com) - Language
 - [React Native](https://reactnative.dev) - Mobile App Framework
 - [Expo](https://expo.dev) - Framework extending React Native
-- [Currency Exchange Rate API](https://github.com/vladutvoicu/Currency-Exchange-Rate-API)
+- [Currency Exchange Rate API](https://github.com/vladutvoicu/Currency-Exchange-Rate-API) - my own API
 
 &nbsp;
 
